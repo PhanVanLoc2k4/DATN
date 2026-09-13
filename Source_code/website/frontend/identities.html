@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SpectraGuard | Quản lý danh tính</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+    <div class="bg-aura"></div>
+    <div class="light-sweep"></div>
+    <div class="app-layout">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-shield-hog"></i></div>
+                    <div class="logo-text">SPECTRA<span style="font-weight:400">GUARD</span></div>
+                </div>
+                <div class="system-badge"><i class="fas fa-microchip"></i> AI • NEURAL VISION</div>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item" onclick="location.href='/'">
+                    <i class="fas fa-home"></i><span>Trang chủ</span>
+                </div>
+                <div class="nav-item" onclick="location.href='/profile'">
+                    <i class="fas fa-user-circle"></i><span>Tài khoản</span>
+                </div>
+                <div class="nav-item" onclick="location.href='/dashboard'">
+                    <i class="fas fa-tachometer-alt"></i><span>Giám sát</span>
+                </div>
+                <div class="nav-item active" onclick="location.href='/identities'">
+                    <i class="fas fa-users-cog"></i><span>Danh tính</span>
+                </div>
+                <div class="nav-item" onclick="location.href='/reports'">
+                    <i class="fas fa-file-contract"></i><span>Báo cáo ca trực</span>
+                </div>
+                <div id="adminLink" class="nav-item" style="display:none;" onclick="location.href='/users'">
+                    <i class="fas fa-user-shield"></i><span>Quản trị</span>
+                </div>
+            </div>
+
+            <div class="nav-item nav-logout" onclick="location.href='/api/logout'">
+                <i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span>
+            </div>
+
+            <div class="sidebar-footer"><i class="fas fa-brain"></i> AI Vision • Bảo vệ thông minh 24/7</div>
+        </div>
+
+        <div class="main-content">
+            <div class="top-header">
+                <div class="page-title">👤 QUẢN LÝ CƠ SỞ DỮ LIỆU DANH TÍNH</div>
+                <div style="display: flex; gap: 18px; align-items: center;">
+                    <div class="datetime" id="currentDateTime"></div>
+                    <div class="notification-wrapper" id="notifBell">
+                        <i class="fas fa-bell"></i>
+                        <div class="notif-dot" id="notifDot"></div>
+                        <div class="notif-dropdown" id="notifDropdown">
+                            <!-- Handled in script -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-container">
+                <div class="info-tabs" style="padding: 25px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                        <div>
+                            <h3 style="margin-bottom: 5px;"><i class="fas fa-database"></i> Thư viện gương mặt</h3>
+                            <p style="font-size: 0.85rem; opacity: 0.6;">Danh sách các cá nhân đã được hệ thống "nhận
+                                diện".</p>
+                        </div>
+                        <button class="detail-btn" onclick="openAddIdentityModal()">
+                            <i class="fas fa-user-plus"></i> THÊM NGƯỜI MỚI
+                        </button>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid rgba(0,255,255,0.2); text-align: left;">
+                                    <th style="padding: 15px;">Họ tên</th>
+                                    <th style="padding: 15px;">MSSV</th>
+                                    <th style="padding: 15px;">Lớp</th>
+                                    <th style="padding: 15px;">Mẫu ảnh</th>
+                                    <th style="padding: 15px; text-align: right;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="identityBody">
+                                <!-- Data will be loaded here -->
+                                <tr>
+                                    <td colspan="3" style="text-align: center; padding: 50px; opacity: 0.5;">
+                                        <i class="fas fa-spinner fa-spin"></i> Đang tải danh sách...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal chỉnh sửa danh tính -->
+    <div id="editIdentityModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(15px); z-index:1500; align-items:center; justify-content:center;">
+        <div
+            style="background: #0c1628; width: 90%; max-width: 500px; border-radius: 30px; border: 1px solid #0ff; padding: 40px; box-shadow: 0 0 50px rgba(0,255,255,0.2);">
+            <h3 style="color: #0ff; margin-bottom: 25px;"><i class="fas fa-user-edit"></i> CHỈNH SỬA DANH TÍNH</h3>
+            <form id="editIdentityForm" style="display: flex; flex-direction: column; gap: 20px;">
+                <input type="hidden" id="oldIdentityName">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; margin-bottom: 8px; opacity: 0.7;">TÊN MỚI</label>
+                    <input type="text" id="newIdentityName" required placeholder="Ví dụ: Nguyễn Văn A"
+                        style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none; transition: 0.3s; box-sizing: border-box;"
+                        onfocus="this.style.borderColor='#0ff'">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; margin-bottom: 8px; opacity: 0.7;">MSSV</label>
+                    <input type="text" id="editIdentityMSSV" placeholder="Ví dụ: B20DCPT123"
+                        style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none; transition: 0.3s; box-sizing: border-box;"
+                        onfocus="this.style.borderColor='#0ff'">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; margin-bottom: 8px; opacity: 0.7;">LỚP</label>
+                    <input type="text" id="editIdentityClass" placeholder="Ví dụ: D20-01"
+                        style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none; transition: 0.3s; box-sizing: border-box;"
+                        onfocus="this.style.borderColor='#0ff'">
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 20px;">
+                    <button type="submit" class="detail-btn" style="flex:2;">LƯU THAY ĐỔI</button>
+                    <button type="button" class="detail-btn" onclick="closeEditIdentityModal()"
+                        style="flex:1; background:#333;">HỦY</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal thêm danh tính mới -->
+    <div id="addIdentityModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(15px); z-index:1500; align-items:center; justify-content:center;">
+        <div
+            style="background: #0c1628; width: 90%; max-width: 500px; border-radius: 30px; border: 1px solid #0ff; padding: 40px; box-shadow: 0 0 50px rgba(0,255,255,0.2);">
+            <h3 style="color: #0ff; margin-bottom: 25px;"><i class="fas fa-user-shield"></i> ĐĂNG KÝ DANH TÍNH MỚI</h3>
+            <form id="addIdentityForm" style="display: flex; flex-direction: column; gap: 20px;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; margin-bottom: 8px; opacity: 0.7;">HỌ VÀ
+                        TÊN</label>
+                    <input type="text" name="name" required placeholder="Ví dụ: Nguyễn Văn A"
+                        style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none; transition: 0.3s; box-sizing: border-box;"
+                        onfocus="this.style.borderColor='#0ff'">
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label style="display: block; font-size: 0.8rem; margin-bottom: 8px; opacity: 0.7;">MSSV</label>
+                        <input type="text" name="mssv" placeholder="Ví dụ: B20DCPT123"
+                            style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none; transition: 0.3s; box-sizing: border-box;"
+                            onfocus="this.style.borderColor='#0ff'">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="display: block; font-size: 0.8rem; margin-bottom: 8px; opacity: 0.7;">LỚP</label>
+                        <input type="text" name="class" placeholder="Ví dụ: D20-01"
+                            style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none; transition: 0.3s; box-sizing: border-box;"
+                            onfocus="this.style.borderColor='#0ff'">
+                    </div>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 0.8rem; margin-bottom: 8px; opacity: 0.7;">HÌNH ẢNH KHUÔN
+                        MẶT</label>
+                    <div style="position: relative; border: 2px dashed #333; border-radius: 15px; height: 150px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: rgba(0,0,0,0.2);"
+                        id="dropArea">
+                        <input type="file" name="image" accept="image/*" required
+                            style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer;"
+                            id="fileInput">
+                        <div style="text-align: center; pointer-events: none;" id="uploadPlaceholder">
+                            <i class="fas fa-cloud-upload-alt"
+                                style="font-size: 2rem; margin-bottom: 10px; color: #0ff;"></i>
+                            <div style="font-size: 0.85rem; opacity: 0.6;">Kéo thả hoặc click để chọn ảnh</div>
+                        </div>
+                        <img id="previewImg" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <p style="font-size: 0.7rem; color: #ffcc00; margin-top: 8px;"><i class="fas fa-info-circle"></i>
+                        Vui lòng chọn ảnh chụp rõ mặt, không đeo khẩu trang.</p>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 20px;">
+                    <button type="submit" class="detail-btn" style="flex:2;">BẮT ĐẦU HUẤN LUYỆN</button>
+                    <button type="button" class="detail-btn" onclick="closeAddIdentityModal()"
+                        style="flex:1; background:#333;">HỦY</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="static/identities.js"></script>
+    <script src="static/chatbot.js"></script>
+
+    <!-- ASA AI Security Assistant -->
+    <div class="chatbot-wrapper">
+        <button class="chatbot-toggle" id="chatbotToggle">
+            <i class="fas fa-robot"></i>
+            <span>ASA ASSISTANT</span>
+        </button>
+
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div class="bot-avatar">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin:0; font-size: 0.95rem;">ASA Assistant</h3>
+                        <span style="font-size: 0.75rem; color: #0ff; opacity:0.8;">Hub AI Security</span>
+                    </div>
+                </div>
+                <button id="closeChat" class="close-chat"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="msg bot">Xin chào! Tôi là ASA, trợ lý an ninh AI. Tôi có thể giúp gì cho bạn?</div>
+            </div>
+            <div class="chatbot-input-area">
+                <div class="quick-prompts">
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Báo cáo thống kê hôm nay')">Thống kê</div>
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Hướng dẫn xử lý xô xát')">Xử lý xô xát</div>
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Tình trạng camera')">Camera</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="chatInput" placeholder="Hỏi ASA về an ninh...">
+                    <button id="sendChat"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

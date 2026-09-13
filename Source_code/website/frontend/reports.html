@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SpectraGuard | Báo Cáo Ca Trực AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+    <div class="bg-aura"></div>
+    <div class="light-sweep"></div>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-shield-hog"></i></div>
+                    <div class="logo-text">SPECTRA<span style="font-weight:400">GUARD</span></div>
+                </div>
+                <div class="system-badge"><i class="fas fa-microchip"></i> AI • NEURAL VISION</div>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item" onclick="location.href='/'">
+                    <i class="fas fa-home"></i><span>Trang chủ</span>
+                </div>
+                <div class="nav-item" onclick="location.href='/profile'">
+                    <i class="fas fa-user-circle"></i><span>Tài khoản</span>
+                </div>
+                <div class="nav-item" onclick="location.href='/dashboard'">
+                    <i class="fas fa-tachometer-alt"></i><span>Giám sát</span>
+                </div>
+                <div class="nav-item" onclick="location.href='/identities'">
+                    <i class="fas fa-users-cog"></i><span>Danh tính</span>
+                </div>
+                <div class="nav-item active" onclick="location.href='/reports'">
+                    <i class="fas fa-file-contract"></i><span>Báo cáo ca trực</span>
+                </div>
+                <div id="adminLink" class="nav-item" style="display:none;" onclick="location.href='/users'">
+                    <i class="fas fa-user-shield"></i><span>Quản trị</span>
+                </div>
+            </div>
+
+            <div class="nav-item nav-logout" onclick="location.href='/api/logout'">
+                <i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span>
+            </div>
+
+            <div class="sidebar-footer"><i class="fas fa-brain"></i> AI Vision • Bảo vệ thông minh 24/7</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <div class="page-title">📋 BÁO CÁO & BÀN GIAO CA TRỰC AI</div>
+                <div style="display: flex; gap: 18px; align-items: center;">
+                    <div class="datetime" id="currentDateTime"></div>
+                </div>
+            </div>
+
+            <div class="content-container">
+                <div class="reports-grid" style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px;">
+                    
+                    <!-- Left: Create Report -->
+                    <div class="info-tabs" style="padding: 30px;">
+                        <h3 style="color: #0ff; font-size: 1.15rem; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-magic"></i> TẠO BÁO CÁO BÀN GIAO CA TRỰC BẰNG AI
+                        </h3>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <label style="display: block; font-size: 0.8rem; opacity: 0.7; margin-bottom: 8px;">THỜI GIAN BẮT ĐẦU CA</label>
+                                    <input type="datetime-local" id="shiftStart" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 10px; outline: none;">
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.8rem; opacity: 0.7; margin-bottom: 8px;">THỜI GIAN KẾT THÚC CA</label>
+                                    <input type="datetime-local" id="shiftEnd" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 10px; outline: none;">
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1.3fr 0.7fr; gap: 15px;">
+                                <div>
+                                    <label style="display: block; font-size: 0.8rem; opacity: 0.7; margin-bottom: 8px;">TÊN CA TRỰC</label>
+                                    <input type="text" id="shiftName" placeholder="Ví dụ: Ca sáng (06:00 - 14:00)" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 10px; outline: none;">
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.8rem; opacity: 0.7; margin-bottom: 8px;">NHANH CHỌN CA</label>
+                                    <select id="quickShiftSelect" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #0ff; border-radius: 10px; outline: none; cursor: pointer;">
+                                        <option value="custom">-- Chọn nhanh --</option>
+                                        <option value="last8">8 giờ qua</option>
+                                        <option value="last12">12 giờ qua</option>
+                                        <option value="last24">24 giờ qua</option>
+                                        <option value="today">Hôm nay (từ 00:00)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 0.8rem; opacity: 0.7; margin-bottom: 8px;">GHI CHÚ BỔ SUNG (Bàn giao thiết bị, sự cố đặc biệt...)</label>
+                                <textarea id="extraNotes" rows="3" placeholder="Nhập các sự việc cần lưu ý trong ca trực ngoài các sự kiện camera đã ghi nhận..." style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 10px; outline: none; resize: vertical; font-family: inherit;"></textarea>
+                            </div>
+
+                            <button class="detail-btn" id="generateReportBtn" style="padding: 14px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.95rem;">
+                                <i class="fas fa-brain"></i> TỔNG HỢP & DỰ THẢO BÁO CÁO AI
+                            </button>
+
+                            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 0;">
+
+                            <div id="aiSummarySection" style="display: none;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <label style="font-size: 0.9rem; font-weight: 600; color: #0ff; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-file-signature"></i> BÁO CÁO TỔNG HỢP (CÓ THỂ CHỈNH SỬA)
+                                    </label>
+                                    <span id="eventCountBadge" style="background: rgba(255,51,102,0.15); color: #ff3366; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid rgba(255,51,102,0.3);">
+                                        Ghi nhận: 0 sự kiện
+                                    </span>
+                                </div>
+                                <textarea id="reportSummary" rows="12" style="width: 100%; padding: 15px; background: rgba(0,0,0,0.4); border: 1px solid rgba(0,255,255,0.2); color: white; border-radius: 12px; outline: none; resize: vertical; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.5;"></textarea>
+                                
+                                <div style="margin-top: 20px; display: flex; gap: 15px;">
+                                    <button class="detail-btn" id="saveReportBtn" style="flex: 1; padding: 14px; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);">
+                                        <i class="fas fa-save"></i> LƯU BÁO CÁO LÊN CƠ SỞ DỮ LIỆU
+                                    </button>
+                                    <button class="detail-btn" id="cancelReportBtn" style="flex: 0.3; padding: 14px; background: #333; box-shadow: none;">
+                                        HỦY
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Reports History -->
+                    <div class="info-tabs" style="padding: 30px; display: flex; flex-direction: column; max-height: 85vh;">
+                        <h3 style="color: #0ff; font-size: 1.15rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                            <i class="fas fa-history"></i> LỊCH SỬ BÁO CÁO CA TRỰC
+                        </h3>
+                        <div id="reportsHistoryList" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-right: 5px;">
+                            <!-- Past shift reports will be dynamically populated here -->
+                            <div style="padding:40px; text-align:center; opacity:0.5; font-size:0.9rem;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; margin-bottom: 10px; display: block; color: #0ff;"></i>
+                                Đang tải danh sách báo cáo...
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shift Report Detail Modal -->
+    <div id="reportDetailModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(15px); z-index:1500; align-items:center; justify-content:center;">
+        <div style="background: radial-gradient(circle at 20% 30%, #0c1628, #03060e); max-width: 800px; width: 90%; border-radius: 30px; border: 1px solid #0ff; box-shadow: 0 0 50px rgba(0, 255, 255, 0.3); overflow: hidden; display: flex; flex-direction: column; max-height: 85vh; animation: modalSlideIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);">
+            <div style="padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,255,255,0.3); background: rgba(0,255,255,0.03);">
+                <h3 style="margin: 0; color: #0ff; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-file-alt"></i> CHI TIẾT BÁO CÁO CA TRỰC #<span id="modalReportId">---</span>
+                </h3>
+                <button id="closeModalBtn" style="background: #ff3366; border: none; width: 34px; height: 34px; border-radius: 50%; color: white; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="padding: 30px; overflow-y: auto; flex: 1; color: #eee; display: flex; flex-direction: column; gap: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div>
+                        <div style="font-size: 0.75rem; opacity: 0.5; margin-bottom: 3px;">NHÂN VIÊN BÁO CÁO</div>
+                        <div id="modalStaffName" style="font-weight: 600; color: #fff;">---</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.75rem; opacity: 0.5; margin-bottom: 3px;">THỜI GIAN NỘP BÁO CÁO</div>
+                        <div id="modalCreatedAt" style="font-weight: 500;">---</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.75rem; opacity: 0.5; margin-bottom: 3px;">KHOẢNG THỜI GIAN CA TRỰC</div>
+                        <div id="modalShiftRange" style="font-weight: 500;">---</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.75rem; opacity: 0.5; margin-bottom: 3px;">TỔNG SỐ SỰ KIỆN GHI NHẬN</div>
+                        <div id="modalTotalEvents" style="font-weight: 700; color: #ff3366;">0 sự kiện</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-size: 0.85rem; font-weight: 600; color: #0ff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-align-left"></i> NỘI DUNG TỔNG HỢP CA TRỰC
+                    </div>
+                    <div id="modalReportSummary" style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); font-family: inherit; font-size: 0.9rem; line-height: 1.6; white-space: pre-wrap; color: #e2e8f0; overflow-x: auto;">
+                        <!-- Report Summary Text -->
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 20px 30px; display: flex; justify-content: flex-end; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2);">
+                <button id="modalCloseActionBtn" class="detail-btn" style="background: #333; box-shadow: none;">ĐÓNG CỬA SỔ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ASA AI Security Assistant -->
+    <div class="chatbot-wrapper">
+        <button class="chatbot-toggle" id="chatbotToggle">
+            <i class="fas fa-robot"></i>
+            <span>ASA ASSISTANT</span>
+        </button>
+
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div class="bot-avatar">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin:0; font-size: 0.95rem;">ASA Assistant</h3>
+                        <span style="font-size: 0.75rem; color: #0ff; opacity:0.8;">Hub AI Security</span>
+                    </div>
+                </div>
+                <button id="closeChat" class="close-chat"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="msg bot">Xin chào! Tôi là ASA, trợ lý an ninh AI. Tôi có thể giúp gì cho bạn?</div>
+            </div>
+            <div class="chatbot-input-area">
+                <div class="quick-prompts">
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Báo cáo thống kê hôm nay')">Thống kê</div>
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Hướng dẫn xử lý xô xát')">Xử lý xô xát</div>
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Hướng dẫn xử lý đám đông')">Xử lý đám đông</div>
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Hướng dẫn xử lý vũ khí')">Xử lý vũ khí</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="chatInput" placeholder="Hỏi ASA về an ninh...">
+                    <button id="sendChat"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes modalSlideIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .report-card {
+            background: rgba(10, 20, 38, 0.6);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 18px;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .report-card:hover {
+            border-color: rgba(0, 255, 255, 0.4);
+            transform: translateY(-3px);
+            background: rgba(10, 20, 38, 0.85);
+            box-shadow: 0 10px 20px rgba(0, 255, 255, 0.05);
+        }
+        
+        .report-card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .report-card-meta {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+        
+        .report-card-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+    </style>
+
+    <script src="static/chatbot.js"></script>
+    <script src="static/reports.js"></script>
+    <script>
+        // Cập nhật đồng hồ thời gian thực
+        function updateDateTime() {
+            const now = new Date();
+            const formatted = now.toLocaleString('vi-VN', { hour12: false });
+            if (document.getElementById('currentDateTime')) {
+                document.getElementById('currentDateTime').innerText = formatted;
+            }
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        // Kiểm tra quyền Admin hiển thị link quản trị
+        fetch('/api/profile')
+            .then(res => res.json())
+            .then(data => {
+                if (data.role === 'admin') {
+                    const adminLink = document.getElementById('adminLink');
+                    if (adminLink) adminLink.style.display = 'flex';
+                }
+            })
+            .catch(err => console.error("Lỗi lấy thông tin vai trò:", err));
+    </script>
+</body>
+
+</html>

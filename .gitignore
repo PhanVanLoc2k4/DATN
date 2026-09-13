@@ -1,0 +1,33 @@
+# Ignore everything by default
+*
+
+# Allow specific essential root files & directories
+!.gitignore
+!README.md
+!Source_code/
+!Source_code/README.md
+!Source_code/SQL_README.md
+!Source_code/WebAnNinh.sql
+!Source_code/yolov8s.pt
+!Source_code/website/
+!Source_code/website/**
+!Source_code/model/
+!Source_code/model/**
+!Source_code/mobile/
+!Source_code/mobile/**
+
+# Ignore node_modules, virtualenvs, cache & heavy exports inside allowed directories
+Source_code/mobile/node_modules/
+Source_code/mobile/.expo/
+Source_code/mobile/dist/
+Source_code/model/runs/
+Source_code/model/weapon_training_local/
+Source_code/website/backend/uploads/
+Source_code/website/backend/runtime_stderr.log
+Source_code/website/backend/runtime_stdout.log
+Source_code/website/frontend/static/uploads/violations/*
+!Source_code/website/frontend/static/uploads/violations/.gitkeep
+Source_code/website/frontend/static/export/*.csv
+*.log
+*.pyc
+__pycache__/

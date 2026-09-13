@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SpectraGuard | Thông tin tài khoản</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+    <div class="bg-aura"></div>
+    <div class="light-sweep"></div>
+    <div class="app-layout">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-shield-hog"></i></div>
+                    <div class="logo-text">SPECTRA<span style="font-weight:400">GUARD</span></div>
+                </div>
+                <div class="system-badge"><i class="fas fa-microchip"></i> AI • NEURAL VISION</div>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item" onclick="location.href='/'">
+                    <i class="fas fa-home"></i><span>Trang chủ</span>
+                </div>
+                <div class="nav-item active" onclick="location.href='/profile'">
+                    <i class="fas fa-user-circle"></i><span>Tài khoản</span>
+                </div>
+                <div class="nav-item" onclick="location.href='/dashboard'">
+                    <i class="fas fa-tachometer-alt"></i><span>Giám sát</span>
+                </div>
+                <div class="nav-item" onclick="location.href='/identities'">
+                    <i class="fas fa-users-cog"></i><span>Danh tính</span>
+                </div>
+                <div class="nav-item" onclick="location.href='/reports'">
+                    <i class="fas fa-file-contract"></i><span>Báo cáo ca trực</span>
+                </div>
+                <div id="adminLink" class="nav-item" style="display:none;" onclick="location.href='/users'">
+                    <i class="fas fa-user-shield"></i><span>Quản trị</span>
+                </div>
+            </div>
+
+            <div class="nav-item nav-logout" onclick="location.href='/api/logout'">
+                <i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span>
+            </div>
+
+            <div class="sidebar-footer"><i class="fas fa-brain"></i> AI Vision • Bảo vệ thông minh 24/7</div>
+        </div>
+
+        <div class="main-content">
+            <div class="top-header">
+                <div class="page-title">👤 THÔNG TIN TÀI KHOẢN</div>
+                <div style="display: flex; gap: 18px; align-items: center;">
+                    <div class="datetime" id="currentDateTime"></div>
+                </div>
+            </div>
+
+            <div class="content-container">
+                <div class="profile-grid" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px;">
+                    <!-- User Info Card -->
+                    <div class="info-tabs" style="padding: 30px;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <div id="avatarContainer"
+                                style="width: 100px; height: 100px; background: rgba(0,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; border: 2px solid #0ff; overflow: hidden;">
+                                <i id="userIcon" class="fas fa-user" style="font-size: 3rem; color: #0ff;"></i>
+                            </div>
+                            <h3 id="displayUsername" style="color: #0ff; font-size: 1.5rem; margin-bottom: 5px;">---
+                            </h3>
+                            <div id="displayRole"
+                                style="display: inline-block; padding: 4px 12px; background: rgba(0,255,255,0.2); border-radius: 20px; font-size: 0.75rem; color: #0ff; font-weight: 600;">
+                                ---</div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+                                <label style="display: block; font-size: 0.75rem; opacity: 0.5; margin-bottom: 5px;">HỌ VÀ TÊN</label>
+                                <div id="displayFullName" style="font-size: 1.1rem; font-weight: 500;">---</div>
+                            </div>
+                            <div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+                                <label style="display: block; font-size: 0.75rem; opacity: 0.5; margin-bottom: 5px;">SỐ ĐIỆN THOẠI</label>
+                                <div id="displayPhone" style="font-size: 1rem; color: #94A3B8;">---</div>
+                            </div>
+                            <div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+                                <label style="display: block; font-size: 0.75rem; opacity: 0.5; margin-bottom: 5px;">EMAIL</label>
+                                <div id="displayEmail" style="font-size: 1rem; color: #94A3B8;">---</div>
+                            </div>
+                            <div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px;">
+                                <label style="display: block; font-size: 0.75rem; opacity: 0.5; margin-bottom: 5px;">NGÀY SINH</label>
+                                <div id="displayDob" style="font-size: 1rem; color: #94A3B8;">---</div>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.75rem; opacity: 0.5; margin-bottom: 5px;">TRẠNG THÁI</label>
+                                <div style="display: flex; align-items: center; gap: 8px; color: #10B981;">
+                                    <div style="width: 8px; height: 8px; background: #10B981; border-radius: 50%;"></div>
+                                    <span style="font-size: 0.9rem; font-weight: 600;">Đang hoạt động</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit Section -->
+                    <div class="info-tabs" style="padding: 35px;">
+                        <h3 style="margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-cog"></i> THIẾT LẬP TÀI KHOẢN
+                        </h3>
+
+                        <form id="profileForm" style="display: flex; flex-direction: column; gap: 25px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; opacity: 0.8;">HỌ VÀ TÊN HIỂN THỊ</label>
+                                    <input type="text" id="fullNameInput" required placeholder="Nhập tên của bạn"
+                                        style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none;">
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; opacity: 0.8;">SỐ ĐIỆN THOẠI</label>
+                                    <input type="text" id="phoneInput" placeholder="Nhập số điện thoại"
+                                        style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none;">
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; opacity: 0.8;">EMAIL LIÊN HỆ</label>
+                                    <input type="email" id="emailInput" placeholder="Nhập địa chỉ email"
+                                        style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none;">
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; margin-bottom: 8px; opacity: 0.8;">NGÀY SINH</label>
+                                    <input type="date" id="dobInput"
+                                        style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none;">
+                                </div>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 5px 0;">
+
+                            <div>
+                                <h4 style="font-size: 0.95rem; margin-bottom: 15px; color: #ff3366;"><i
+                                        class="fas fa-key"></i> ĐỔI MẬT KHẨU</h4>
+                                <div style="display: flex; flex-direction: column; gap: 15px;">
+                                    <input type="password" id="oldPassword" placeholder="Mật khẩu hiện tại"
+                                        style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none;">
+                                    <input type="password" id="newPassword" placeholder="Mật khẩu mới"
+                                        style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none;">
+                                    <input type="password" id="confirmPassword" placeholder="Xác nhận mật khẩu mới"
+                                        style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 12px; outline: none;">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="detail-btn" style="margin-top: 10px; padding: 15px;">
+                                <i class="fas fa-save"></i> LƯU THAY ĐỔI
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/profile.js"></script>
+    <script src="static/chatbot.js"></script>
+
+    <!-- ASA AI Security Assistant -->
+    <div class="chatbot-wrapper">
+        <button class="chatbot-toggle" id="chatbotToggle">
+            <i class="fas fa-robot"></i>
+            <span>ASA ASSISTANT</span>
+        </button>
+
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div class="bot-avatar">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin:0; font-size: 0.95rem;">ASA Assistant</h3>
+                        <span style="font-size: 0.75rem; color: #0ff; opacity:0.8;">Hub AI Security</span>
+                    </div>
+                </div>
+                <button id="closeChat" class="close-chat"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="msg bot">Xin chào! Tôi là ASA, trợ lý an ninh AI. Tôi có thể giúp gì cho bạn?</div>
+            </div>
+            <div class="chatbot-input-area">
+                <div class="quick-prompts">
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Báo cáo thống kê hôm nay')">Thống kê</div>
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Hướng dẫn xử lý xô xát')">Xử lý xô xát</div>
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Tình trạng camera')">Camera</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="chatInput" placeholder="Hỏi ASA về an ninh...">
+                    <button id="sendChat"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const formatted = now.toLocaleString('vi-VN', { hour12: false });
+            if (document.getElementById('currentDateTime')) {
+                document.getElementById('currentDateTime').innerText = formatted;
+            }
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,148 @@
+Line 46: def login_required(f):
+  41: CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "*"}})
+  42: 
+  43: app.secret_key = os.getenv('SECRET_KEY', 'default_secret_key_if_env_missing')
+  44: 
+  45: # ================= AUTHENTICATION DECORATORS =================
+  46: def login_required(f):
+  47:     @wraps(f)
+  48:     def decorated_function(*args, **kwargs):
+  49:         if 'user_id' not in session:
+  50:             return jsonify({"error": "Unauthorized"}), 401
+  51:         return f(*args, **kwargs)
+  52:     return decorated_function
+  53: 
+  54: def admin_required(f):
+  55:     @wraps(f)
+  56:     def decorated_function(*args, **kwargs):
+  57:         if 'user_id' not in session or session.get('role') != 'admin':
+  58:             return jsonify({"error": "Admin access required"}), 403
+  59:         return f(*args, **kwargs)
+  60:     return decorated_function
+  61: 
+  62: # ================= KHỞI TẠO BỘ NÃO AI =================
+  63: try:
+  64:     # Khởi tạo ASABrain để xử lý các nghiệp vụ chatbot
+  65:     brain = ASABrain()
+  66:     print("✅ ASA Brain đã sẵn sàng trong App Server.")
+  67: except Exception as e:
+  68:     print(f"⚠️ Cảnh báo: Không thể khởi tạo ASA Brain: {e}")
+  69:     brain = None
+  70: 
+  71: # ================= API DETECT ENDPOINTS =================
+  72: @app.route('/detect_faces', methods=['POST'])
+  73: @login_required
+  74: def api_faces():
+  75:     cam_id = request.json.get("cam_id", "cam1")
+--------------------------------------------------
+Line 781: def login_page():
+  776:     if 'user_id' not in session:
+  777:         return redirect(url_for('login_page'))
+  778:     return send_from_directory(FRONTEND_DIR, 'profile.html')
+  779: 
+  780: @app.route('/login')
+  781: def login_page():
+  782:     return send_from_directory(FRONTEND_DIR, 'login.html')
+  783: 
+  784: @app.route('/identities')
+  785: def identities_page():
+  786:     if 'user_id' not in session:
+  787:         return redirect(url_for('login_page'))
+  788:     return send_from_directory(FRONTEND_DIR, 'identities.html')
+  789: 
+  790: # ================= API AUTHENTICATIONS =================
+  791: @app.route('/api/login', methods=['POST'])
+  792: def api_login():
+  793:     data = request.json
+  794:     username = data.get('username')
+  795:     password = data.get('password')
+  796: 
+  797:     try:
+  798:         conn = get_db_connection()
+  799:         cursor = conn.cursor()
+  800:         cursor.execute("SELECT id, username, role, full_name FROM users WHERE username = ? AND password = ?", (username, password))
+  801:         user = cursor.fetchone()
+  802:         conn.close()
+  803: 
+  804:         if user:
+  805:             session['user_id'] = user[0]
+  806:             session['username'] = user[1]
+  807:             session['role'] = user[2]
+  808:             session['full_name'] = user[3] if len(user) > 3 else user[1]
+  809:             return jsonify({"success": True, "user": {"id": user[0], "username": user[1], "role": user[2], "full_name": user[3] if len(user) > 3 else user[1]}})
+  810:         else:
+--------------------------------------------------
+Line 791: @app.route('/api/login', methods=['POST'])
+  786:     if 'user_id' not in session:
+  787:         return redirect(url_for('login_page'))
+  788:     return send_from_directory(FRONTEND_DIR, 'identities.html')
+  789: 
+  790: # ================= API AUTHENTICATIONS =================
+  791: @app.route('/api/login', methods=['POST'])
+  792: def api_login():
+  793:     data = request.json
+  794:     username = data.get('username')
+  795:     password = data.get('password')
+  796: 
+  797:     try:
+  798:         conn = get_db_connection()
+  799:         cursor = conn.cursor()
+  800:         cursor.execute("SELECT id, username, role, full_name FROM users WHERE username = ? AND password = ?", (username, password))
+  801:         user = cursor.fetchone()
+  802:         conn.close()
+  803: 
+  804:         if user:
+  805:             session['user_id'] = user[0]
+  806:             session['username'] = user[1]
+  807:             session['role'] = user[2]
+  808:             session['full_name'] = user[3] if len(user) > 3 else user[1]
+  809:             return jsonify({"success": True, "user": {"id": user[0], "username": user[1], "role": user[2], "full_name": user[3] if len(user) > 3 else user[1]}})
+  810:         else:
+  811:             return jsonify({"success": False, "message": "Sai tài khoản hoặc mật khẩu"}), 401
+  812:     except Exception as e:
+  813:         return jsonify({"success": False, "message": str(e)}), 500
+  814: 
+  815: @app.route('/api/logout')
+  816: def api_logout():
+  817:     session.clear()
+  818:     return redirect(url_for('login_page'))
+  819: 
+  820: # ================= API HISTORY & TICKETS =================
+--------------------------------------------------
+Line 792: def api_login():
+  787:         return redirect(url_for('login_page'))
+  788:     return send_from_directory(FRONTEND_DIR, 'identities.html')
+  789: 
+  790: # ================= API AUTHENTICATIONS =================
+  791: @app.route('/api/login', methods=['POST'])
+  792: def api_login():
+  793:     data = request.json
+  794:     username = data.get('username')
+  795:     password = data.get('password')
+  796: 
+  797:     try:
+  798:         conn = get_db_connection()
+  799:         cursor = conn.cursor()
+  800:         cursor.execute("SELECT id, username, role, full_name FROM users WHERE username = ? AND password = ?", (username, password))
+  801:         user = cursor.fetchone()
+  802:         conn.close()
+  803: 
+  804:         if user:
+  805:             session['user_id'] = user[0]
+  806:             session['username'] = user[1]
+  807:             session['role'] = user[2]
+  808:             session['full_name'] = user[3] if len(user) > 3 else user[1]
+  809:             return jsonify({"success": True, "user": {"id": user[0], "username": user[1], "role": user[2], "full_name": user[3] if len(user) > 3 else user[1]}})
+  810:         else:
+  811:             return jsonify({"success": False, "message": "Sai tài khoản hoặc mật khẩu"}), 401
+  812:     except Exception as e:
+  813:         return jsonify({"success": False, "message": str(e)}), 500
+  814: 
+  815: @app.route('/api/logout')
+  816: def api_logout():
+  817:     session.clear()
+  818:     return redirect(url_for('login_page'))
+  819: 
+  820: # ================= API HISTORY & TICKETS =================
+  821: @app.route('/api/history', methods=['GET'])
+--------------------------------------------------

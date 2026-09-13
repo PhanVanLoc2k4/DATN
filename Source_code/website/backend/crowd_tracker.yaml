@@ -1,0 +1,14 @@
+# Ultralytics BoTSORT tracker configuration - Optimized for High Stability Crowd Tracking
+tracker_type: botsort      # tracker type, ['botsort', 'bytetrack']
+track_high_thresh: 0.35    # threshold for the first association
+track_low_thresh: 0.1     # threshold for the second association
+new_track_thresh: 0.4      # threshold to initiate new track
+track_buffer: 150          # Increase buffer to keep IDs longer when occluded
+match_thresh: 0.8          # Match threshold for Hungarian algorithm
+gmc_method: none  # Disabled GMC for static security cameras to prevent Kalman prediction drift
+proximity_thresh: 0.5      # threshold for proximity matching
+appearance_thresh: 0.3     # ReID threshold
+with_reid: True            # Enable ReID to maintain sticky IDs
+model: auto               
+fuse_score: True          
+iou_thresh: 0.2            # Keep IOU threshold low to allow slight overlaps

@@ -1,0 +1,30 @@
+# Environment Secrets
+website/backend/.env
+
+# Dataset (Large files)
+dataset/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE
+.vscode/
+.idea/
+
+# Media
+*.mp4
+*.avi
+*.mkv
+*.mov
+
+# OS specific
+Thumbs.db
+Desktop.ini
+
+# App Uploads
+website/frontend/static/uploads/violations/
+website/backend/uploads/

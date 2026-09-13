@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>SpectraGuard | Security Control Center</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="static/style.css">
+
+    <!-- Load Chart.js for real-time analytics graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
+    <style>
+        /* Security Control Center Specific Styles */
+        .scc-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .scc-grid.alerts-active {
+            grid-template-columns: 7fr 3fr;
+        }
+
+        @media (max-width: 1200px) {
+            .scc-grid.alerts-active {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .scc-main-left {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .scc-main-right {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .scc-card {
+            background: rgba(10, 25, 47, 0.45);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(0, 255, 204, 0.15);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .scc-card:hover {
+            border-color: rgba(0, 255, 204, 0.3);
+            box-shadow: 0 20px 45px rgba(0, 255, 204, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+
+        .card-header h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .live-indicator-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 255, 204, 0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #00ffcc;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #00ffcc;
+            box-shadow: 0 0 8px #00ffcc;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .scc-middle-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .scc-middle-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .scc-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .scc-filters select,
+        .scc-filters input[type="date"] {
+            background: #0c1628 !important;
+            border: 1px solid rgba(0, 255, 204, 0.3) !important;
+            color: #ffffff !important;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            outline: none;
+            transition: all 0.3s ease;
+            min-width: 140px;
+            flex: 1;
+        }
+
+        .scc-filters select option {
+            background-color: #0c1628 !important;
+            color: #ffffff !important;
+            padding: 12px;
+        }
+
+        .scc-filters select option:hover,
+        .scc-filters select option:focus,
+        .scc-filters select option:checked {
+            background-color: #005566 !important;
+            color: #00ffcc !important;
+        }
+
+        .scc-filters select:hover,
+        .scc-filters input[type="date"]:hover {
+            border-color: #00ffcc !important;
+            background: #102038 !important;
+        }
+
+        .scc-filters select:focus,
+        .scc-filters input[type="date"]:focus {
+            border-color: #00ffcc !important;
+            box-shadow: 0 0 12px rgba(0, 255, 204, 0.3) !important;
+        }
+
+        #exportPeriod {
+            background-color: #071421 !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(0, 255, 204, 0.45) !important;
+            color-scheme: dark;
+        }
+
+        #exportPeriod option {
+            background-color: #071421 !important;
+            color: #ffffff !important;
+        }
+
+        #exportPeriod option:checked {
+            background-color: #0969da !important;
+            color: #ffffff !important;
+        }
+
+        .report-period-select {
+            position: relative;
+            min-width: 220px;
+        }
+
+        .report-period-trigger {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 9px 14px;
+            color: #fff;
+            background: #071421;
+            border: 1px solid rgba(0, 255, 204, 0.45);
+            border-radius: 10px;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .report-period-trigger[aria-expanded="true"] {
+            border-color: #00ffcc;
+            box-shadow: 0 0 12px rgba(0, 255, 204, 0.2);
+        }
+
+        .report-period-menu {
+            display: none;
+            position: absolute;
+            z-index: 20;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            overflow: hidden;
+            padding: 5px;
+            background: #071421;
+            border: 1px solid rgba(0, 255, 204, 0.4);
+            border-radius: 10px;
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.55);
+        }
+
+        .report-period-menu.open { display: grid; }
+
+        .report-period-option {
+            padding: 10px 12px;
+            color: #dce7f5;
+            background: transparent;
+            border: 0;
+            border-radius: 7px;
+            text-align: left;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .report-period-option:hover,
+        .report-period-option.active {
+            color: #00ffcc;
+            background: #0c3040;
+        }
+
+        .scc-table-container {
+            overflow-x: auto;
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .scc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .scc-table th,
+        .scc-table td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .scc-table th {
+            background: rgba(0, 255, 204, 0.05);
+            font-weight: 600;
+            color: #00ffcc;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.75px;
+        }
+
+        .scc-table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .scc-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .table-thumb {
+            width: 55px;
+            height: 38px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .table-thumb:hover {
+            transform: scale(1.1);
+            border-color: #00ffcc;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+        }
+
+        .badge-status {
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-new {
+            background: rgba(255, 51, 102, 0.15);
+            color: #000000;
+            border: 1px solid rgba(255, 51, 102, 0.3);
+        }
+
+        .status-processing {
+            background: rgba(255, 165, 0, 0.15);
+            color: #ffa500;
+            border: 1px solid rgba(255, 165, 0, 0.3);
+        }
+
+        .status-resolved {
+            background: rgba(0, 255, 204, 0.15);
+            color: #00ffcc;
+            border: 1px solid rgba(0, 255, 204, 0.3);
+        }
+
+        .status-dismissed {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .badge-level {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: inline-block;
+            text-transform: uppercase;
+        }
+
+        .badge-level.level-1 {
+            background: rgba(0, 255, 204, 0.15);
+            color: #00ffcc;
+            border: 1px solid rgba(0, 255, 204, 0.25);
+        }
+
+        .badge-level.level-2 {
+            background: rgba(255, 165, 0, 0.15);
+            color: #ffa500;
+            border: 1px solid rgba(255, 165, 0, 0.25);
+        }
+
+        .badge-level.level-3 {
+            background: rgba(255, 51, 102, 0.15);
+            color: #ff3366;
+            border: 1px solid rgba(255, 51, 102, 0.25);
+        }
+
+        .scc-pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .scc-alert-panel {
+            max-height: calc(100vh - 160px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .emergency-alerts-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-right: 6px;
+        }
+
+        .emergency-alerts-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .emergency-alerts-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .emergency-item {
+            background: rgba(255, 51, 102, 0.05);
+            border: 1px solid rgba(255, 51, 102, 0.25);
+            border-radius: 16px;
+            padding: 16px;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .emergency-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            color: #ff3366;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .emergency-evidence {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 51, 102, 0.3);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .emergency-evidence:hover {
+            transform: scale(1.03);
+            box-shadow: 0 5px 15px rgba(255, 51, 102, 0.3);
+        }
+
+        .emergency-meta {
+            font-size: 0.78rem;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 8px;
+        }
+
+        .emergency-meta b {
+            color: #ffffff;
+        }
+
+        .emergency-actions-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .emergency-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .emergency-btn.btn-confirm {
+            background: #00ffcc;
+            color: #000000;
+        }
+
+        .emergency-btn.btn-confirm:hover {
+            background: #00cca3;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+        }
+
+        .emergency-btn.btn-dismiss {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .emergency-btn.btn-dismiss:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .staff-assign-select {
+            width: 100%;
+            background: #0c1628 !important;
+            border: 1px solid rgba(0, 255, 204, 0.3) !important;
+            color: #ffffff !important;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .staff-assign-select option {
+            background-color: #0c1628 !important;
+            color: #ffffff !important;
+            padding: 8px 12px;
+        }
+
+        .staff-assign-select:focus {
+            border-color: #00ffcc !important;
+        }
+
+        .no-alerts-msg {
+            text-align: center;
+            padding: 50px 20px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .no-alerts-msg i {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            color: rgba(0, 255, 204, 0.25);
+            display: block;
+        }
+
+        .map-container {
+            height: 250px;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .map-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(10, 32, 64, 0.6) 0%, rgba(3, 12, 28, 0.95) 100%);
+        }
+
+        .map-label {
+            position: absolute;
+            color: rgba(0, 255, 204, 0.35);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        .map-label.zone-a {
+            top: 35px;
+            left: 45px;
+        }
+
+        .map-label.zone-b {
+            top: 60px;
+            right: 60px;
+        }
+
+        .map-label.zone-c {
+            bottom: 45px;
+            left: 90px;
+        }
+
+        .map-area {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #00ffcc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px #00ffcc;
+            transition: all 0.3s ease;
+        }
+
+        .map-area.alert-active {
+            background: #ff3366;
+            box-shadow: 0 0 15px #ff3366;
+        }
+
+        .map-area.alert-active .ping {
+            border-color: #ff3366;
+            animation: mapPing 1s infinite ease-out;
+        }
+
+        .map-area .ping {
+            position: absolute;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid #00ffcc;
+            animation: mapPing 1.8s infinite ease-out;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes mapPing {
+            0% {
+                transform: scale(0.2);
+                opacity: 0.8;
+            }
+
+            80% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+        }
+
+        .hotspot-lbl {
+            position: absolute;
+            top: 22px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 3px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #map-area-cam1 {
+            top: 50px;
+            left: 100px;
+        }
+
+        #map-area-cam2 {
+            top: 90px;
+            right: 120px;
+        }
+
+        #map-area-cam3 {
+            bottom: 70px;
+            left: 150px;
+        }
+
+        #map-area-cam4 {
+            bottom: 90px;
+            right: 80px;
+        }
+
+        .scc-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            flex-grow: 1;
+            align-content: center;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 35px 12px;
+            text-align: center;
+            transition: transform 0.25s ease;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .stat-val {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #00ffcc;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .stat-lbl {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-aura"></div>
+    <div class="light-sweep"></div>
+    <div class="app-layout">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-shield-halved"></i></div>
+                    <div class="logo-text">SPECTRA<span style="font-weight:400">GUARD</span></div>
+                </div>
+                <div class="system-badge"><i class="fas fa-microchip"></i> AI • NEURAL VISION</div>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item" onclick="location.href='/'">
+                    <i class="fas fa-home"></i><span>Trang chủ</span>
+                </div>
+                <div class="nav-item" onclick="location.href='/profile'">
+                    <i class="fas fa-user-circle"></i><span>Tài khoản</span>
+                </div>
+                <div class="nav-item active" onclick="location.href='/dashboard'">
+                    <i class="fas fa-tachometer-alt"></i><span>Giám sát</span>
+                </div>
+                <div class="nav-item" onclick="location.href='/identities'">
+                    <i class="fas fa-users-cog"></i><span>Danh tính</span>
+                </div>
+                <div class="nav-item" onclick="location.href='/reports'">
+                    <i class="fas fa-file-contract"></i><span>Báo cáo ca trực</span>
+                </div>
+                <div id="adminLink" class="nav-item" style="display:none;" onclick="location.href='/users'">
+                    <i class="fas fa-user-shield"></i><span>Quản trị</span>
+                </div>
+            </div>
+
+            <div class="nav-item nav-logout" onclick="location.href='/api/logout'">
+                <i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span>
+            </div>
+
+            <div class="sidebar-footer"><i class="fas fa-brain"></i> AI Vision • Bảo vệ thông minh 24/7</div>
+        </div>
+
+        <div class="main-content">
+            <div class="top-header">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div class="page-title">🛡️ SECURITY CONTROL CENTER</div>
+                    <button class="detail-btn" onclick="openCameraConfigModal()"
+                        style="padding: 8px 18px; font-size: 0.8rem; border-radius: 12px; background: rgba(0, 255, 204, 0.1); border-color: rgba(0, 255, 204, 0.3);">
+                        <i class="fas fa-cog"></i> CẤU HÌNH CAMERA
+                    </button>
+                </div>
+                <div style="display: flex; gap: 18px; align-items: center;">
+                    <div class="datetime" id="currentDateTime"></div>
+                    <div class="notification-wrapper" id="notifBell">
+                        <i class="fas fa-bell"></i>
+                        <div class="notif-dot" id="notifDot"></div>
+                        <div class="notif-dropdown" id="notifDropdown">
+                            <div class="notif-header">
+                                <span>THÔNG BÁO MỚI</span>
+                                <span style="font-weight:400; font-size:0.75rem; opacity:0.8;">Vừa xong</span>
+                            </div>
+                            <div class="notif-list" id="notifList">
+                                <div style="padding:20px; text-align:center; opacity:0.5; font-size:0.8rem;">Đang tải
+                                    thông báo...</div>
+                            </div>
+                            <div class="notif-footer" onclick="location.href='/#searchTitle'">Xem tất cả nhật ký</div>
+                        </div>
+                    </div>
+                    <div class="live-indicator-wrapper">
+                        <div class="live-dot"></div><span>LIVE</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-container">
+                <!-- Main Grid Layout of Security Control Center -->
+                <div class="scc-grid" id="sccGrid">
+
+                    <!-- Left Section: Video Streams, Map, Stats & Event log -->
+                    <div class="scc-main-left">
+
+                        <!-- Live Camera Streams -->
+                        <div class="scc-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-desktop"></i> KHU VỰC CAMERA TRỰC TIẾP</h3>
+                                <div class="live-indicator-wrapper">
+                                    <div class="live-dot"></div><span>TRỰC TIẾP</span>
+                                </div>
+                            </div>
+                            <div class="cameras-grid" id="camerasGrid">
+                                <!-- Dynamic Camera Cards loaded via script.js -->
+                            </div>
+                        </div>
+
+                        <!-- Map & Stats row under cameras -->
+                        <div class="scc-middle-grid">
+                            <!-- 2D Campus Layout Map -->
+                            <div class="scc-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-map-location-dot"></i> SƠ ĐỒ CẢNH BÁO</h3>
+                                </div>
+                                <div class="map-container">
+                                    <div class="map-wrapper">
+                                        <div class="map-label zone-a">KHU VỰC A</div>
+                                        <div class="map-label zone-b">KHU VỰC B</div>
+                                        <div class="map-label zone-c">KHU VỰC C</div>
+
+                                        <div class="map-area" id="map-area-cam1">
+                                            <div class="ping"></div>
+                                            <span class="hotspot-lbl">CỔNG</span>
+                                        </div>
+                                        <div class="map-area" id="map-area-cam2">
+                                            <div class="ping"></div>
+                                            <span class="hotspot-lbl">NHÀ XE</span>
+                                        </div>
+                                        <div class="map-area" id="map-area-cam3">
+                                            <div class="ping"></div>
+                                            <span class="hotspot-lbl">HÀNH LANG</span>
+                                        </div>
+                                        <div class="map-area" id="map-area-cam4">
+                                            <div class="ping"></div>
+                                            <span class="hotspot-lbl">SÂN</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Real-time Stats without line chart -->
+                            <div class="scc-card"
+                                style="display: flex; flex-direction: column; justify-content: space-between;">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-chart-line"></i> THỐNG KÊ SỰ CỐ TRONG NGÀY</h3>
+                                </div>
+                                <div class="scc-stats-grid">
+                                    <div class="stat-box">
+                                        <span class="stat-val" id="cntToday">0</span>
+                                        <span class="stat-lbl">Hôm nay</span>
+                                    </div>
+                                    <div class="stat-box">
+                                        <span class="stat-val" id="cntWeek">0</span>
+                                        <span class="stat-lbl">Tuần này</span>
+                                    </div>
+                                    <div class="stat-box">
+                                        <span class="stat-val" id="cntMonth">0</span>
+                                        <span class="stat-lbl">Tháng này</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Section: Alerts panel only -->
+                    <div class="scc-main-right" id="sccMainRight">
+
+                        <!-- Emergency Alerts -->
+                        <div class="scc-card scc-alert-panel">
+                            <div class="card-header">
+                                <h3><i class="fas fa-exclamation-triangle" style="color: #ff3366;"></i> CẢNH BÁO KHẨN
+                                    CẤP</h3>
+                                <span class="badge-status status-new" id="emergencyCount">0 MỚI</span>
+                            </div>
+
+                            <!-- Bulk processing options -->
+                            <div class="emergency-bulk-actions" id="emergencyBulkActions"
+                                style="display: none; gap: 10px; margin-bottom: 15px;">
+                                <button class="emergency-btn btn-confirm" onclick="confirmAllEmergencies()">TIẾP NHẬN
+                                    TẤT CẢ</button>
+                                <button class="emergency-btn btn-dismiss" onclick="dismissAllEmergencies()">HỦY TẤT
+                                    CẢ</button>
+                            </div>
+
+                            <div class="emergency-alerts-list" id="emergencyAlertsList">
+                                <!-- Loaded dynamically via script.js -->
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Event Logs Table (Rộng 100% toàn màn hình, không bị chèn ép khi có Cảnh báo khẩn cấp) -->
+                <div class="scc-card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list-ul"></i> NHẬT KÝ SỰ CỐ AN NINH</h3>
+                        <button class="detail-btn" onclick="openShiftReportModal()"
+                            style="padding: 8px 16px; font-size: 0.8rem; border-radius: 12px;">
+                            <i class="fas fa-file-export"></i> XUẤT BÁO CÁO CA TRỰC
+                        </button>
+                    </div>
+
+                    <!-- Advanced Filters Panel -->
+                    <div class="scc-filters">
+                        <select id="filterCamera">
+                            <option value="all">Tất cả Camera</option>
+                            <option value="cam1">CAM 01 (Cổng chính)</option>
+                            <option value="cam2">CAM 02 (Nhà xe)</option>
+                            <option value="cam3">CAM 03 (Hành lang)</option>
+                            <option value="cam4">CAM 04 (Sân trường)</option>
+                        </select>
+                        <select id="filterZone">
+                            <option value="all">Tất cả Khu vực</option>
+                            <!-- Options populated by loadZones() -->
+                        </select>
+                        <select id="filterType">
+                            <option value="all">Tất cả Sự kiện</option>
+                            <option value="face">Khuôn mặt</option>
+                            <option value="behavior">Hành vi vi phạm</option>
+                            <option value="crowd">Tụ tập đông người</option>
+                            <option value="weapon">Phát hiện vũ khí</option>
+                        </select>
+                        <select id="filterAlertLevel">
+                            <option value="all">Tất cả Mức độ</option>
+                            <option value="Mức 1">Mức 1 (Thấp)</option>
+                            <option value="Mức 2">Mức 2 (Trung bình)</option>
+                            <option value="Mức 3">Mức 3 (Khẩn cấp)</option>
+                        </select>
+                        <input type="date" id="filterStartDate" placeholder="Từ ngày">
+                        <input type="date" id="filterEndDate" placeholder="Đến ngày">
+
+                    </div>
+
+                    <!-- Table container -->
+                    <div class="scc-table-container">
+                        <table class="scc-table">
+                            <thead>
+                                <tr>
+                                    <th>Minh chứng</th>
+                                    <th>Thời gian</th>
+                                    <th>Camera</th>
+                                    <th>Khu vực</th>
+                                    <th>Sự kiện</th>
+                                    <th>Mức độ</th>
+                                    <th>Đối tượng</th>
+                                    <th>Phân công xử lý</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventsTableBody">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="scc-pagination">
+                        <span id="pageIndicatorText">Trang 1 / 1</span>
+                        <div style="display:flex; gap:10px;">
+                            <button class="detail-btn"
+                                onclick="if (currentPage > 1) { currentPage--; loadEventsTable(); }"
+                                style="padding:6px 14px;"><i class="fas fa-chevron-left"></i> Trước</button>
+                            <button class="detail-btn" onclick="currentPage++; loadEventsTable();"
+                                style="padding:6px 14px;">Sau <i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal chi tiết sự cố camera -->
+    <div id="detailModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(20px); z-index:1200; align-items:center; justify-content:center;">
+        <div
+            style="background: radial-gradient(circle at 20% 30%, #0c1628, #03060e); max-width: 800px; width: 90%; border-radius: 40px; border: 1px solid cyan;">
+            <div
+                style="padding: 20px 24px; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,255,255,0.3); align-items: center;">
+                <h2 id="modalTitle" style="color: #00ffcc; font-size: 1.25rem; margin:0;"><i class="fas fa-camera"></i>
+                    Chi tiết camera</h2>
+                <button id="closeModalBtn"
+                    style="background: #ff3366; border: none; width: 38px; height: 38px; border-radius: 50%; color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+            </div>
+            <div id="modalHistoryList" style="padding: 20px; max-height: 450px; overflow-y: auto;"></div>
+        </div>
+    </div>
+
+    <!-- Modal Cấu hình camera -->
+    <div id="cameraConfigModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(20px); z-index:1200; align-items:center; justify-content:center;">
+        <div
+            style="background: radial-gradient(circle at 20% 30%, #0c1628, #03060e); max-width: 600px; width: 90%; border-radius: 30px; border: 1px solid cyan; padding: 25px;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,255,255,0.3); padding-bottom:15px; margin-bottom:20px;">
+                <h2 style="color:#0ff; margin:0; font-size:1.4rem;"><i class="fas fa-cog"></i> CẤU HÌNH HỆ THỐNG CAMERA
+                </h2>
+                <button onclick="document.getElementById('cameraConfigModal').style.display='none'"
+                    style="background:#ff3366; border:none; width:36px; height:36px; border-radius:50%; color:white; font-size:16px; cursor:pointer;">✕</button>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="color: #fff; font-size: 1rem; margin: 0;"><i class="fas fa-video"></i> DANH SÁCH CAMERA</h3>
+                <button class="detail-btn" onclick="openAddCameraModal()" style="padding: 8px 15px; font-size: 0.8rem;">
+                    <i class="fas fa-plus"></i> THÊM CAMERA
+                </button>
+            </div>
+            <div class="camera-manager-list" id="cameraManagerList"
+                style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;">
+                <!-- Loaded dynamically -->
+            </div>
+            <div style="display:flex; justify-content:flex-end;">
+                <button class="detail-btn" onclick="document.getElementById('cameraConfigModal').style.display='none'"
+                    style="background:#333; padding:10px 20px;">ĐÓNG</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal thêm camera mới -->
+    <div id="addCameraModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(15px); z-index:1300; align-items:center; justify-content:center;">
+        <div
+            style="background: #0c1628; width: 90%; max-width: 500px; border-radius: 30px; border: 1px solid #0ff; padding: 30px;">
+            <h3 style="color: #0ff; margin-bottom: 25px;"><i class="fas fa-plus-circle"></i> THÊM CAMERA MỚI</h3>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <input type="text" id="newCamName" placeholder="Tên Camera (Ví dụ: Cam 03)"
+                    style="padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 10px;">
+                <input type="text" id="newCamLoc" placeholder="Vị trí (Ví dụ: Nhà xe)"
+                    style="padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 10px;">
+                <div style="display: flex; flex-direction: column; gap: 5px;">
+                    <label style="color: #aaa; font-size: 0.8rem; margin-left: 5px;">Chọn nguồn Video:</label>
+                    <input type="file" id="newCamFile" accept="video/*"
+                        style="padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 10px; font-size: 0.8rem;">
+                </div>
+                <select id="newCamType" onchange="toggleCrowdInputs(this.value)"
+                    style="padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 10px;">
+                    <option value="face">Nhận diện khuôn mặt (Face AI)</option>
+                    <option value="behavior">Nhận diện hành vi (Behavior AI)</option>
+                    <option value="crowd">Phát hiện đám đông (Crowd AI)</option>
+                    <option value="weapon">Phát hiện vũ khí (Weapon AI)</option>
+                </select>
+                <!-- Crowd Settings Container for Add -->
+                <div id="crowdSettingsContainer" style="display: none; flex-direction: column; gap: 10px;">
+                    <label style="color: #aaa; font-size: 0.8rem; margin-left: 5px;">Cấu hình Đám đông:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="newCamThreshold" placeholder="Ngưỡng người (VD: 8)" value="8"
+                            style="flex: 1; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 10px;">
+                        <input type="number" id="newCamDuration" placeholder="Thời gian s (VD: 30)" value="30"
+                            style="flex: 1; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 10px;">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="detail-btn" onclick="saveNewCamera()" style="flex:1;">LƯU CAMERA</button>
+                    <button class="detail-btn" onclick="document.getElementById('addCameraModal').style.display='none'"
+                        style="flex:1; background:#333;">HỦY</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal sửa camera -->
+    <div id="editCameraModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(15px); z-index:1300; align-items:center; justify-content:center;">
+        <div
+            style="background: #0c1628; width: 90%; max-width: 500px; border-radius: 30px; border: 1px solid #0ff; padding: 30px;">
+            <h3 style="color: #0ff; margin-bottom: 25px;"><i class="fas fa-edit"></i> CẬP NHẬT CAMERA</h3>
+            <input type="hidden" id="editCamDbId">
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <input type="text" id="editCamName" placeholder="Tên Camera (Ví dụ: Cam 03)"
+                    style="padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 10px;">
+                <input type="text" id="editCamLoc" placeholder="Vị trí (Ví dụ: Nhà xe)"
+                    style="padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 10px;">
+                <input type="text" id="editCamSrc" placeholder="Đường dẫn nguồn video (Ví dụ: /static/videos/cam3.mp4)"
+                    style="padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 10px;">
+                <select id="editCamType" onchange="toggleEditCrowdInputs(this.value)"
+                    style="padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 10px;">
+                    <option value="face">Nhận diện khuôn mặt (Face AI)</option>
+                    <option value="behavior">Nhận diện hành vi (Behavior AI)</option>
+                    <option value="crowd">Phát hiện đám đông (Crowd AI)</option>
+                    <option value="weapon">Phát hiện vũ khí (Weapon AI)</option>
+                </select>
+                <!-- Crowd Settings Container for Edit -->
+                <div id="editCrowdSettingsContainer" style="display: none; flex-direction: column; gap: 10px;">
+                    <label style="color: #aaa; font-size: 0.8rem; margin-left: 5px;">Cấu hình Đám đông:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="editCamThreshold" placeholder="Ngưỡng người (VD: 8)" value="8"
+                            style="flex: 1; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 10px;">
+                        <input type="number" id="editCamDuration" placeholder="Thời gian s (VD: 30)" value="30"
+                            style="flex: 1; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; color: white; border-radius: 10px;">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="detail-btn" onclick="saveEditedCamera()" style="flex:1;">LƯU THAY ĐỔI</button>
+                    <button class="detail-btn" onclick="document.getElementById('editCameraModal').style.display='none'"
+                        style="flex:1; background:#333;">HỦY</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Báo cáo ca trực -->
+    <div id="shiftReportModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); backdrop-filter:blur(20px); z-index:1200; align-items:center; justify-content:center;">
+        <div
+            style="background: radial-gradient(circle at 20% 30%, #0c1628, #03060e); max-width: 900px; width: 90%; border-radius: 30px; border: 1px solid cyan; padding: 25px;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(0,255,255,0.3); padding-bottom:15px; margin-bottom:20px;">
+                <h2 style="color:#0ff; margin:0; font-size:1.4rem;"><i class="fas fa-file-contract"></i> BÁO CÁO CA TRỰC
+                    BẢO VỆ</h2>
+                <button onclick="document.getElementById('shiftReportModal').style.display='none'"
+                    style="background:#ff3366; border:none; width:36px; height:36px; border-radius:50%; color:white; font-size:16px; cursor:pointer;">✕</button>
+            </div>
+            <div style="display:flex; gap:15px; align-items:center; margin-bottom:20px;">
+                <label style="color:#aaa; font-size:0.9rem;">Khoảng thời gian báo cáo:</label>
+                <div class="report-period-select" id="reportPeriodSelect">
+                    <input type="hidden" id="exportPeriod" value="today">
+                    <button type="button" class="report-period-trigger" id="reportPeriodTrigger"
+                        aria-haspopup="listbox" aria-expanded="false">
+                        <span id="reportPeriodLabel">Hôm nay</span>
+                        <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                    </button>
+                    <div class="report-period-menu" id="reportPeriodMenu" role="listbox">
+                        <button type="button" class="report-period-option active" data-value="today">Hôm nay</button>
+                        <button type="button" class="report-period-option" data-value="yesterday">Hôm qua</button>
+                        <button type="button" class="report-period-option" data-value="week">7 ngày qua</button>
+                        <button type="button" class="report-period-option" data-value="month">30 ngày qua</button>
+                    </div>
+                </div>
+                <span id="previewCount"
+                    style="background:rgba(0,255,204,0.1); border:1px solid #00ffcc; color:#00ffcc; padding:4px 10px; border-radius:12px; font-size:0.8rem; font-weight:600;">0
+                    bản ghi</span>
+            </div>
+            <div
+                style="max-height:350px; overflow-y:auto; border-radius:12px; border:1px solid rgba(255,255,255,0.05); margin-bottom:20px;">
+                <table style="width:100%; border-collapse:collapse; font-size:0.8rem; text-align:left;">
+                    <thead style="background:rgba(0,255,204,0.05); color:#00ffcc;">
+                        <tr>
+                            <th style="padding:10px;">Mã Sự Cố</th>
+                            <th style="padding:10px;">Camera</th>
+                            <th style="padding:10px;">Sự Kiện</th>
+                            <th style="padding:10px;">Thời Gian</th>
+                            <th style="padding:10px;">Đối Tượng</th>
+                            <th style="padding:10px;">Bảo Vệ Xử Lý</th>
+                            <th style="padding:10px;">Trạng Thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="previewBody">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button class="detail-btn" onclick="executeShiftExport()" style="padding:10px 20px;"><i
+                        class="fas fa-download"></i> XUẤT FILE EXCEL (CSV)</button>
+                <button class="detail-btn" onclick="document.getElementById('shiftReportModal').style.display='none'"
+                    style="background:#333; padding:10px 20px;">ĐÓNG</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zoom Image Overlay -->
+    <div id="zoomOverlay" onclick="this.style.display='none'"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:1500; align-items:center; justify-content:center; cursor:zoom-out;">
+        <img id="zoomImg" src=""
+            style="max-width:90%; max-height:90%; border-radius:15px; border:2px solid #00ffcc; box-shadow: 0 0 40px rgba(0, 255, 204, 0.4);">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
+    <script src="static/benchmark.js"></script>
+    <script src="static/script.js"></script>
+    <script src="static/chatbot.js"></script>
+
+
+    <!-- ASA AI Security Assistant -->
+    <div class="chatbot-wrapper">
+        <button class="chatbot-toggle" id="chatbotToggle">
+            <i class="fas fa-robot"></i>
+            <span>ASA ASSISTANT</span>
+        </button>
+
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div class="bot-avatar">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h3 style="margin:0; font-size: 0.95rem;">ASA Assistant</h3>
+                        <span style="font-size: 0.75rem; color: #0ff; opacity:0.8;">Hub AI Security</span>
+                    </div>
+                </div>
+                <button id="closeChat" class="close-chat"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="msg bot">Xin chào! Tôi là ASA, trợ lý an ninh AI. Tôi có thể giúp gì cho bạn?</div>
+            </div>
+            <div class="chatbot-input-area">
+                <div class="quick-prompts">
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Báo cáo thống kê hôm nay')">Thống kê</div>
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Hướng dẫn xử lý xô xát')">Xử lý xô xát</div>
+                    <div class="prompt-chip" onclick="sendQuickPrompt('Tình trạng camera')">Camera</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="chatInput" placeholder="Hỏi ASA về an ninh...">
+                    <button id="sendChat"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

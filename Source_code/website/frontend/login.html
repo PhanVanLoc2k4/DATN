@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpectraGuard | Đăng nhập hệ thống AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .login-card {
+            background: rgba(10, 20, 38, 0.75);
+            backdrop-filter: blur(25px);
+            padding: 50px 40px;
+            border-radius: 40px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 255, 255, 0.05);
+            animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .login-header .logo-icon {
+            margin: 0 auto 20px;
+            width: 70px;
+            height: 70px;
+            font-size: 32px;
+        }
+
+        .login-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff, #80ffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .login-subtitle {
+            font-size: 0.9rem;
+            color: #8899aa;
+            margin-bottom: 35px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #00d4ff;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(0, 212, 255, 0.5);
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            background: rgba(0, 30, 60, 0.4);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            padding: 14px 14px 14px 48px;
+            border-radius: 16px;
+            color: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: rgba(0, 50, 90, 0.5);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00d4ff, #0077ff);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(0, 119, 255, 0.3);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(0, 119, 255, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #ff4466;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            display: none;
+            padding: 10px;
+            background: rgba(255, 68, 102, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 68, 102, 0.2);
+        }
+
+        .footer-note {
+            margin-top: 30px;
+            font-size: 0.75rem;
+            color: #556677;
+        }
+
+        /* Forgot Password Styles */
+        .forgot-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+
+        .forgot-link {
+            color: #8899aa;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .forgot-link:hover {
+            color: #00d4ff;
+            text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(4, 8, 16, 0.85);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: rgba(10, 20, 38, 0.9);
+            backdrop-filter: blur(25px);
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid rgba(0, 255, 255, 0.25);
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 255, 255, 0.05);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .modal-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: #00d4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #8899aa;
+            font-size: 1.8rem;
+            cursor: pointer;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: color 0.3s;
+            padding: 5px;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #ff4466;
+        }
+
+        .modal-desc {
+            color: #8899aa;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .modal-submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00d4ff, #0077ff);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(0, 119, 255, 0.3);
+        }
+
+        .modal-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(0, 119, 255, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .success-message {
+            color: #00ffcc;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 255, 204, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            text-align: left;
+        }
+
+        .support-info {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
+            color: #667788;
+            text-align: left;
+        }
+
+        .support-info i {
+            color: #00d4ff;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-aura"></div>
+    <div class="light-sweep"></div>
+
+    <div class="login-card">
+        <div class="login-header">
+            <div class="logo-icon"><i class="fas fa-shield-halved"></i></div>
+            <h1 class="login-title">SPECTRA GUARD</h1>
+            <p class="login-subtitle">Hệ thống giám sát AI - Trung tâm điều hành</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label>Tên đăng nhập</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Nhập tài khoản SA..." required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Mật khẩu</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <div class="forgot-container">
+                <a href="#" id="forgotPasswordBtn" class="forgot-link">Quên mật khẩu?</a>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">ĐĂNG NHẬP HỆ THỐNG</button>
+            <div id="errorMsg" class="error-message"></div>
+        </form>
+
+        <div class="footer-note">
+            <i class="fas fa-brain"></i> Neural Vision Security Engine v2.0
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-icon"><i class="fas fa-key"></i></div>
+                <h2 class="modal-title">Khôi phục mật khẩu</h2>
+                <button type="button" class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Step 1: Nhập Email -->
+                <div id="forgotStepEmail">
+                    <p class="modal-desc">Vui lòng nhập địa chỉ Email đăng ký của tài khoản để nhận mã xác thực OTP.</p>
+                    <div class="input-group">
+                        <label>Địa chỉ Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="forgotEmail" placeholder="Nhập email đăng ký của bạn..." required>
+                        </div>
+                    </div>
+                    <button type="button" class="modal-submit-btn" id="btnSendOTP">LẤY LẠI MẬT KHẨU</button>
+                </div>
+
+                <!-- Step 2: Nhập OTP -->
+                <div id="forgotStepOTP" style="display: none;">
+                    <p class="modal-desc">Hệ thống đã gửi một mã OTP gồm 6 chữ số tới email của đồng chí. Vui lòng nhập mã để xác nhận.</p>
+                    <div class="input-group">
+                        <label>Mã xác thực OTP</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-key"></i>
+                            <input type="text" id="forgotOTP" placeholder="Nhập mã OTP..." required maxlength="6" style="letter-spacing: 4px; font-weight: bold; text-align: center;">
+                        </div>
+                    </div>
+                    <button type="button" class="modal-submit-btn" id="btnVerifyOTP">XÁC MINH OTP</button>
+                </div>
+
+                <!-- Step 3: Đổi mật khẩu mới -->
+                <div id="forgotStepReset" style="display: none;">
+                    <p class="modal-desc">Cập nhật mật khẩu mới cho tài khoản của đồng chí.</p>
+                    <div class="input-group">
+                        <label>Mật khẩu mới</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="resetNewPassword" placeholder="Nhập mật khẩu mới..." required>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Nhập lại mật khẩu</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="resetConfirmPassword" placeholder="Xác nhận mật khẩu mới..." required>
+                        </div>
+                    </div>
+                    <button type="button" class="modal-submit-btn" id="btnConfirmReset">XÁC NHẬN</button>
+                </div>
+
+                <div id="forgotSuccessMsg" class="success-message" style="display: none;"></div>
+                <div id="forgotErrorMsg" class="error-message" style="display: none;"></div>
+
+                <div class="support-info">
+                    <p><i class="fas fa-headset"></i> Hotline hỗ trợ nhanh: <strong>0987.654.321</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ĐANG XÁC THỰC...';
+            btn.disabled = true;
+            errorMsg.style.display = 'none';
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = '/';
+                } else {
+                    errorMsg.innerText = data.message || 'Lỗi đăng nhập';
+                    errorMsg.style.display = 'block';
+                    btn.innerHTML = 'ĐĂNG NHẬP HỆ THỐNG';
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                errorMsg.innerText = 'Không thể kết nối máy chủ';
+                errorMsg.style.display = 'block';
+                btn.innerHTML = 'ĐĂNG NHẬP HỆ THỐNG';
+                btn.disabled = false;
+            }
+        });
+
+        // Forgot Password Modal Handlers
+        const forgotModal = document.getElementById('forgotModal');
+        const forgotBtn = document.getElementById('forgotPasswordBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const forgotSuccessMsg = document.getElementById('forgotSuccessMsg');
+        const forgotErrorMsg = document.getElementById('forgotErrorMsg');
+
+        // Steps
+        const forgotStepEmail = document.getElementById('forgotStepEmail');
+        const forgotStepOTP = document.getElementById('forgotStepOTP');
+        const forgotStepReset = document.getElementById('forgotStepReset');
+
+        // Inputs
+        const forgotEmail = document.getElementById('forgotEmail');
+        const forgotOTP = document.getElementById('forgotOTP');
+        const resetNewPassword = document.getElementById('resetNewPassword');
+        const resetConfirmPassword = document.getElementById('resetConfirmPassword');
+
+        // Buttons
+        const btnSendOTP = document.getElementById('btnSendOTP');
+        const btnVerifyOTP = document.getElementById('btnVerifyOTP');
+        const btnConfirmReset = document.getElementById('btnConfirmReset');
+
+        function resetForgotModal() {
+            forgotStepEmail.style.display = 'block';
+            forgotStepOTP.style.display = 'none';
+            forgotStepReset.style.display = 'none';
+            forgotEmail.value = '';
+            forgotOTP.value = '';
+            resetNewPassword.value = '';
+            resetConfirmPassword.value = '';
+            forgotSuccessMsg.style.display = 'none';
+            forgotErrorMsg.style.display = 'none';
+        }
+
+        forgotBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            forgotModal.classList.add('active');
+            resetForgotModal();
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            forgotModal.classList.remove('active');
+        });
+
+        // Close modal when clicking outside
+        forgotModal.addEventListener('click', (e) => {
+            if (e.target === forgotModal) {
+                forgotModal.classList.remove('active');
+            }
+        });
+
+        // Step 1: Send OTP
+        btnSendOTP.addEventListener('click', async () => {
+            const emailVal = forgotEmail.value.trim();
+            if (!emailVal) {
+                forgotErrorMsg.innerText = 'Vui lòng nhập địa chỉ Email đăng ký!';
+                forgotErrorMsg.style.display = 'block';
+                return;
+            }
+
+            btnSendOTP.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ĐANG GỬI...';
+            btnSendOTP.disabled = true;
+            forgotSuccessMsg.style.display = 'none';
+            forgotErrorMsg.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailVal })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    forgotSuccessMsg.innerText = data.message + (data.demo_otp ? ' (Mã OTP thử nghiệm: ' + data.demo_otp + ')' : '');
+                    forgotSuccessMsg.style.display = 'block';
+                    forgotStepEmail.style.display = 'none';
+                    forgotStepOTP.style.display = 'block';
+                } else {
+                    forgotErrorMsg.innerText = data.message || 'Lỗi gửi yêu cầu';
+                    forgotErrorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                forgotErrorMsg.innerText = 'Không thể kết nối máy chủ';
+                forgotErrorMsg.style.display = 'block';
+            } finally {
+                btnSendOTP.innerHTML = 'LẤY LẠI MẬT KHẨU';
+                btnSendOTP.disabled = false;
+            }
+        });
+
+        // Step 2: Verify OTP
+        btnVerifyOTP.addEventListener('click', async () => {
+            const emailVal = forgotEmail.value.trim();
+            const otpVal = forgotOTP.value.trim();
+            if (!otpVal) {
+                forgotErrorMsg.innerText = 'Vui lòng nhập mã OTP!';
+                forgotErrorMsg.style.display = 'block';
+                return;
+            }
+
+            btnVerifyOTP.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ĐANG XÁC MINH...';
+            btnVerifyOTP.disabled = true;
+            forgotSuccessMsg.style.display = 'none';
+            forgotErrorMsg.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailVal, otp: otpVal })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    forgotSuccessMsg.style.display = 'none';
+                    forgotStepOTP.style.display = 'none';
+                    forgotStepReset.style.display = 'block';
+                } else {
+                    forgotErrorMsg.innerText = data.message || 'Mã OTP không chính xác!';
+                    forgotErrorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                forgotErrorMsg.innerText = 'Không thể kết nối máy chủ';
+                forgotErrorMsg.style.display = 'block';
+            } finally {
+                btnVerifyOTP.innerHTML = 'XÁC MINH OTP';
+                btnVerifyOTP.disabled = false;
+            }
+        });
+
+        // Step 3: Reset Password
+        btnConfirmReset.addEventListener('click', async () => {
+            const emailVal = forgotEmail.value.trim();
+            const newPasswordVal = resetNewPassword.value;
+            const confirmPasswordVal = resetConfirmPassword.value;
+
+            if (!newPasswordVal || !confirmPasswordVal) {
+                forgotErrorMsg.innerText = 'Vui lòng điền đầy đủ mật khẩu!';
+                forgotErrorMsg.style.display = 'block';
+                return;
+            }
+
+            if (newPasswordVal !== confirmPasswordVal) {
+                forgotErrorMsg.innerText = 'Mật khẩu xác nhận không khớp!';
+                forgotErrorMsg.style.display = 'block';
+                return;
+            }
+
+            btnConfirmReset.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ĐANG THIẾT LẬP...';
+            btnConfirmReset.disabled = true;
+            forgotSuccessMsg.style.display = 'none';
+            forgotErrorMsg.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/reset-password-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailVal, new_password: newPasswordVal })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    forgotSuccessMsg.innerText = data.message;
+                    forgotSuccessMsg.style.display = 'block';
+                    forgotStepReset.style.display = 'none';
+                    setTimeout(() => {
+                        forgotModal.classList.remove('active');
+                    }, 3000);
+                } else {
+                    forgotErrorMsg.innerText = data.message || 'Lỗi thiết lập mật khẩu';
+                    forgotErrorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                forgotErrorMsg.innerText = 'Không thể kết nối máy chủ';
+                forgotErrorMsg.style.display = 'block';
+            } finally {
+                btnConfirmReset.innerHTML = 'XÁC NHẬN';
+                btnConfirmReset.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
