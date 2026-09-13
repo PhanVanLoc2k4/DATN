@@ -17,7 +17,8 @@
 !Source_code/mobile/
 !Source_code/mobile/**
 !Source_code/docs/
-!Source_code/docs/**
+!Source_code/docs/*.txt
+!Source_code/docs/*.pdf
 
 # Ignore node_modules, virtualenvs, cache & heavy exports inside allowed directories
 Source_code/mobile/node_modules/
