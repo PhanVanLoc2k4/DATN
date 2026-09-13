@@ -48,66 +48,63 @@
 
 ---
 
-## ⚙️ Hướng dẫn Cài đặt & Sử dụng
+## ⚙️ HƯỚNG DẪN CÀI ĐẶT THƯ VIỆN & CHẠY HỆ THỐNG
 
-### Yêu cầu hệ thống
-1. Windows 10/11 với Python 3.9 trở lên.
-2. Microsoft SQL Server (Đã cài đặt DB `DAN_AnNinh`).
-3. (Tùy chọn) Máy tính có GPU để inference AI tốc độ cao (ONNX CUDA Execution Provider).
+> 📘 **HƯỚNG DẪN CHI TIẾT:** Xem file [HUONG_DAN_CAI_DAT.md](file:///d:/22050044_PhanVanLoc/Source_code/HUONG_DAN_CAI_DAT.md) để xem chi tiết cách cài đặt từng bước từ A-Z.
 
-### Cài đặt môi trường
-Đầu tiên, clone/download mã nguồn về máy:
+### 📋 Tóm tắt các bước cài đặt nhanh (Quickstart)
 
-#### 1. Môi trường Web/Backend (Python)
+#### 1. Khởi tạo Cơ sở dữ liệu (SQL Server)
+- Mở **SQL Server Management Studio (SSMS)**.
+- Chạy file script [`WebAnNinh.sql`](file:///d:/22050044_PhanVanLoc/Source_code/WebAnNinh.sql) để khởi tạo Database `WebAnNinh` cùng tất cả các bảng dữ liệu.
+
+#### 2. Cài đặt Backend & AI Engine (Python)
+Mở Terminal tại thư mục `Source_code`:
 ```bash
-# Tạo môi trường ảo (Virtual Environment)
+# Tạo và kích hoạt môi trường ảo
 python -m venv venv
-venv\Scripts\activate
+.\venv\Scripts\activate
 
-# Cài đặt các thư viện yêu cầu
-pip install flask pyodbc opencv-python numpy onnxruntime pillow scikit-learn ultralytics insightface google-genai pymupdf flask_cors
+# Cài đặt tất cả thư viện Python
+pip install -r requirements.txt
 ```
 
-#### 2. Môi trường Mobile (React Native / Expo)
-Yêu cầu: Máy tính cần cài đặt [Node.js](https://nodejs.org/).
+#### 3. Cài đặt Mobile App (React Native / Expo)
+Mở Terminal mới tại thư mục `Source_code`:
 ```bash
-# Chuyển vào thư mục mobile
+# Di chuyển vào thư mục mobile
 cd mobile
 
-# Cài đặt các gói thư viện
+# Cài đặt thư viện Node.js
 npm install
 ```
 
-### Thiết lập Database & Model AI
-1. **Model InsightFace:** Hệ thống dùng model `buffalo_l`. Lần chạy đầu tiên sẽ tự động tải model này lưu tại thư mục `C:\Users\<TênUser>\.insightface\models`.
-2. **Model Behavior:** File `behavior_face.pt` phải nằm trong cùng thư mục `website/backend/`.
-3. **Database:** Mở SQL Server, tạo cơ sở dữ liệu `DAN_AnNinh` và đảm bảo chuỗi kết nối trong `get_db_connection` tại `app.py` và `chatbot.py` trùng hợp với tên `Server` của bạn.
+#### 4. Khởi chạy hệ thống
 
-### Khởi động hệ thống
-Bạn có thể tự chạy qua terminal hoặc dùng file batch tạo sẵn:
-
-#### 1. Khởi động Web/Backend
+**Chạy Web Backend & AI Engine:**
 ```bash
-python website\backend\app.py
-
-##hoặc
-
-.\venv\Scripts\python.exe website\backend\app.py
+# Tại thư mục Source_code (đã kích hoạt venv)
+python website/backend/app.py
 ```
-Trình duyệt sẽ mở tại: [http://localhost:5000](http://localhost:5000)
+👉 Trình duyệt sẽ mở tại địa chỉ: [http://localhost:5000](http://localhost:5000)
 
-#### 2. Khởi động Mobile App (Android/iOS)
-Mở một cửa sổ Terminal mới:
+**Chạy Mobile App (Bảo vệ):**
 ```bash
-cd mobile
-
-# Khởi động Expo Server
+# Tại thư mục mobile
 npm start
-
-# Hoặc khởi động và mở luôn trên máy ảo/thiết bị Android
-npm run android
 ```
-*(Lưu ý: Bạn có thể cài ứng dụng **Expo Go** trên điện thoại để quét mã QR chạy thử)*
+👉 Dùng ứng dụng **Expo Go** trên điện thoại Android/iOS quét mã QR để khởi chạy app.
+
+---
+
+### 🔑 Tài khoản mặc định
+
+| Hệ thống | Đường dẫn / Ứng dụng | Tài khoản (Username) | Mật khẩu (Password) |
+|---|---|---|---|
+| **Web Dashboard** | `http://localhost:5000/login` | `admin` | `123` |
+| **Mobile App** | App Bảo vệ (Expo Go) | `bv1` | `123` |
+
+---
 
 ## 🗂️ Cấu trúc thư mục định tuyến
 
