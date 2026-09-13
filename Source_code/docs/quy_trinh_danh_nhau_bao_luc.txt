@@ -1,0 +1,35 @@
+================================================================================
+QUY TRÌNH NGHIỆP VỤ BẢO VỆ 02: PHÁT HIỆN HÀNH VI XÔ XÁT, ĐÁNH NHAU & BẠO LỰC
+Mã quy trình: QT-AN-02/BAOLUC
+Áp dụng: Đội Bảo vệ & Giám sát An ninh Trường Đại học
+================================================================================
+
+1. MỤC ĐÍCH & YÊU CẦU:
+- Kịp thời can thiệp, dập tắt các vụ mâu thuẫn, xô xát, đánh nhau trong khuôn viên trường.
+- Đảm bảo an toàn tính mạng, sức khỏe cho sinh viên, giảng viên và cán bộ nhà trường.
+- Phản ứng nhanh chóng dưới 2 phút kể từ khi AI phát báo động.
+
+2. QUY TRÌNH 5 BƯỚC XỬ LÝ:
+
+Bước 1: Báo động Đỏ Khẩn cấp
+- AI phát hiện chuyển động va chạm mạnh, xung đột hành vi (Violence Score > 0.8).
+- Cảnh báo âm thanh còi hú phát ra tại Phòng Trực ban & gửi Push Notification khẩn tới tất cả Bảo vệ ca trực.
+
+Bước 2: Huy động Lực lượng Tiếp ứng
+- Đội trưởng bảo vệ lập tức điều động ít nhất 03 đến 05 bảo vệ mang theo công cụ hỗ trợ (gậy cao su, loa cầm tay, bộ đàm) di chuyển nhanh tới vị trí sự cố.
+
+Bước 3: Can thiệp & Khống chế
+- Dùng loa phóng thanh yêu cầu các đối tượng DỪNG NGAY hành vi bạo lực.
+- Lực lượng bảo vệ tiến vào chia cắt, cô lập các nhóm đối đầu.
+- Tước bỏ ngay các vật dụng cầm tay có nguy cơ gây thương tích (ghế, chai thủy tinh,...).
+- Bật camera hành trình / điện thoại ghi hình lại toàn bộ diễn biến làm bằng chứng.
+
+Bước 4: Sơ cứu & Báo cáo Ban Giám hiệu
+- Nếu có người bị thương: Gọi ngay Y tế nhà trường hoặc Xe cấp cứu 115.
+- Đưa các đối tượng vi phạm về Phòng Bảo vệ để làm rõ nguyên nhân.
+- Báo cáo khẩn cho Trưởng ban An ninh & Phòng Công tác Sinh viên.
+
+Bước 5: Lưu hồ sơ & Báo cáo AI
+- Trích xuất video clip sự cố từ hệ thống AI làm căn cứ xử lý kỷ luật.
+- Dùng tính năng 'Auto Shift Report' của AI ASA để tổng hợp báo cáo ca trực.
+================================================================================

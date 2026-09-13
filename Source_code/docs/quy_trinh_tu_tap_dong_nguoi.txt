@@ -1,0 +1,35 @@
+================================================================================
+QUY TRÌNH NGHIỆP VỤ BẢO VỆ 04: PHÁT HIỆN TỤ TẬP ĐÔNG NGƯỜI & MẤT TRẬT TỰ
+Mã quy trình: QT-AN-04/TUTAP
+Áp dụng: Đội Bảo vệ & Giám sát An ninh Trường Đại học
+================================================================================
+
+1. MỤC ĐÍCH & YÊU CẦU:
+- Phát hiện và quản lý các vụ tụ tập đông người tự phát vượt quá mật độ cho phép (từ 5-10 người trở lên).
+- Ngăn ngừa tình trạng ùn tắc giao thông nội bộ, biểu tình, cãi lộn hoặc gây mất trật tự công cộng.
+- Giải tán đám đông ôn hòa, đúng quy định nhà trường.
+
+2. QUY TRÌNH 5 BƯỚC XỬ LÝ:
+
+Bước 1: Tiếp nhận Cảnh báo Mật độ Đám đông
+- AI đếm số lượng người trong khung hình camera vượt ngưỡng cấu hình (Density threshold > 5).
+- Hệ thống gửi cảnh báo mức 2 về Dashboard và ứng dụng di động.
+
+Bước 2: Phân loại Tính chất Đám đông
+- Nhân viên trực camera kiểm tra nguyên nhân tụ tập:
+  + Dạng A: Sinh viên tụ tập xem thể thao, văn nghệ, sự kiệnCLB (Bình thường).
+  + Dạng B: Tụ tập cản trở hành lối đi, cổng trường, cầu thang.
+  + Dạng C: Tụ tập mâu thuẫn, cãi vã, có nguy cơ bùng phát xô xát.
+
+Bước 3: Nhắc nhở & Hướng dẫn
+- Đối với Dạng B: Bảo vệ khu vực đến nhắc nhở sinh viên giải tán hoặc di chuyển về khu vực sinh hoạt chung.
+- Đối với Dạng C: Lập tức điều động 02-03 bảo vệ đến giải tán đám đông, mời các cá nhân cầm đầu về phòng làm việc.
+
+Bước 4: Xử lý Cố tình Vi phạm
+- Nếu sinh viên không chấp hành hướng dẫn: Kiểm tra thẻ sinh viên, ghi nhận MSSV và lập biên bản vi phạm quy định trật tự học đường.
+- Chuyển danh sách cho Phòng Công tác Sinh viên xử lý kỷ luật.
+
+Bước 5: Đóng Sự kiện & Báo cáo
+- Cập nhật kết quả xử lý sự kiện lên Web Dashboard.
+- Kiểm tra lại camera đảm bảo khu vực đã thông thoáng, an toàn.
+================================================================================

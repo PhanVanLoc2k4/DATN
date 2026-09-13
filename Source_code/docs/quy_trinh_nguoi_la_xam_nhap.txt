@@ -1,0 +1,34 @@
+================================================================================
+QUY TRÌNH NGHIỆP VỤ BẢO VỆ 01: PHÁT HIỆN NGƯỜI LẠ & XÂM NHẬP TRÁI PHÉP
+Mã quy trình: QT-AN-01/XAMNHAP
+Áp dụng: Đội Bảo vệ & Giám sát An ninh Trường Đại học
+================================================================================
+
+1. MỤC ĐÍCH & YÊU CẦU:
+- Kiểm soát chặt chẽ danh tính cá nhân ra vào khuôn viên trường.
+- Phát hiện sớm đối tượng người lạ, kẻ gian đột nhập khu vực hạn chế (phòng máy chủ, văn phòng ban giám hiệu, kho quỹ,...).
+- Đảm bảo an toàn tài sản và trật tự an ninh chung.
+
+2. QUY TRÌNH 5 BƯỚC XỬ LÝ:
+
+Bước 1: Tiếp nhận Cảnh báo từ Hệ thống AI
+- AI phát hiện khuôn mặt chưa có trong CSDL (danh tính 'Người lạ') hoặc đối tượng lảng vảng trong vùng cấm quá thời gian quy định.
+- Hệ thống phát tín hiệu cảnh báo trên Web Dashboard và gửi thông báo tới Mobile Bảo vệ.
+
+Bước 2: Xác minh Nhanh tại Trực ban
+- Nhân viên trực camera kiểm tra lại video thời gian thực và ảnh chụp sự cố.
+- Đánh giá sơ bộ thái độ, trang phục, hành vi của đối tượng.
+
+Bước 3: Tiếp cận Hiện trường
+- Điều động 01 bảo vệ ca trực gần nhất tiếp cận đối tượng trong vòng 3 phút.
+- Yêu cầu đối tượng xuất trình Thẻ Sinh viên / Thẻ Cán bộ hoặc Giấy tờ tùy thân (CCCD).
+
+Bước 4: Xử lý Tình huống
+- Trường hợp 1 (Khách liên hệ công tác): Hướng dẫn đối tượng đến Phòng Bảo vệ cổng chính để đăng ký thông tin vào sổ tiếp khách.
+- Trường hợp 2 (Sinh viên quên thẻ): Đối chiếu thông tin MSSV trên ứng dụng di động để xác nhận.
+- Trường hợp 3 (Cố tình xâm nhập / Nghi vấn kẻ gian): Mời về Phòng Bảo vệ lập biên bản, kiểm tra đồ đạc và báo cáo Đội trưởng.
+
+Bước 5: Cập nhật Nhật ký & Báo cáo
+- Đánh dấu trạng thái xử lý 'Đã giải quyết' trên Web Dashboard / Mobile App.
+- Ghi chú thông tin đối tượng vào sổ nhật ký ca trực.
+================================================================================

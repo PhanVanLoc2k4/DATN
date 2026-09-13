@@ -1,0 +1,34 @@
+================================================================================
+QUY TRÌNH NGHIỆP VỤ BẢO VỆ 03: PHÁT HIỆN VŨ KHÍ & VẬT NGUY HIỂM
+Mã quy trình: QT-AN-03/VUKHI
+Áp dụng: Đội Bảo vệ & Giám sát An ninh Trường Đại học
+================================================================================
+
+1. MỤC ĐÍCH & YÊU CẦU:
+- Triệt phá nguy cơ đe dọa an ninh nghiêm trọng nhất liên quan đến vũ khí (Súng, Dao, Gậy, Vật sắc nhọn).
+- Đảm bảo quy tắc An toàn là trên hết đối với sinh viên và lực lượng bảo vệ.
+- Kích hoạt cơ chế phối hợp lực lượng Công an địa phương.
+
+2. QUY TRÌNH 5 BƯỚC XỬ LÝ:
+
+Bước 1: Kích hoạt Trạng thái Báo động Vũ khí
+- AI nhận diện chính xác vật thể nguy hiểm (Súng / Dao / Gậy) qua camera.
+- Hệ thống khóa tự động hoặc phát cảnh báo nguy hiểm mức cao nhất trên toàn hệ thống.
+
+Bước 2: Di tản Sinh viên & Phong tỏa
+- Bảo vệ trực ban phát thông báo khẩn qua hệ thống loa trường yêu cầu sinh viên di tản khỏi khu vực nguy hiểm.
+- Phong tỏa các đường dẫn vào vị trí có vũ khí, không cho người không nhiệm vụ đi vào.
+
+Bước 3: Báo Cảnh sát 113 & Công an Phường
+- Trưởng ca bảo vệ gọi ngay cho Công an Phường sở tại và Cảnh sát Phản ứng nhanh 113.
+- Cung cấp tọa độ camera, đặc điểm đối tượng và loại vũ khí cho lực lượng công an.
+
+Bước 4: Khống chế An toàn (Khi đủ điều kiện)
+- Lực lượng bảo vệ trang bị lá chắn chống bạo động, áo giáp, bình xịt hơi cay duy trì khoảng cách an toàn.
+- Chỉ tiến hành khống chế khi đối tượng sơ hở hoặc có sự hỗ trợ của lực lượng Công an.
+- Thu giữ vũ khí, đánh dấu hiện trường nguyên vẹn.
+
+Bước 5: Bàn giao & Phối hợp Điều tra
+- Bàn giao đối tượng và vũ khí cho Công an lập biên bản tố tụng.
+- Trích xuất và bàn giao toàn bộ dữ liệu video AI làm bằng chứng chứng cứ pháp lý.
+================================================================================
