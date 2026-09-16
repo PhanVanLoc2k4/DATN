@@ -4,6 +4,10 @@
 # Allow specific essential root files & directories
 !.gitignore
 !README.md
+!22050044_PhanVanLoc_DATN.docx
+!22050044_PhanVanLoc_poster.pdf
+!22050044_PhanVanLoc_DAN.pptx
+!Link_Github.txt
 !Source_code/
 !Source_code/README.md
 !Source_code/HUONG_DAN_CAI_DAT.md
